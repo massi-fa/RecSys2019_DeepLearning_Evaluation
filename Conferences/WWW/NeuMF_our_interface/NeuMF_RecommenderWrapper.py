@@ -10,7 +10,6 @@ Created on 18/12/18
 from Base.BaseRecommender import BaseRecommender
 from Base.Incremental_Training_Early_Stopping import Incremental_Training_Early_Stopping
 
-
 import numpy as np
 import scipy.sparse as sps
 from Base.DataIO import DataIO
@@ -20,6 +19,16 @@ from keras.models import Model, load_model, save_model, clone_model
 from keras.layers import Embedding, Input, Dense, Reshape, Flatten, Dropout, Concatenate, Multiply
 from keras.optimizers import Adagrad, Adam, SGD, RMSprop
 from keras.backend import clear_session
+
+def write_on_file(file_path,string):
+    if os.path.isfile(file_path):
+        file = open(file_path,"a")
+        file.write(string)
+        file.write("\n")
+    else:
+        file = open(file_path, "w")
+        file.write(string)
+        file.write("\n")
 
 
 def MLP_get_model(num_users, num_items, layers = [20,10], reg_layers=[0,0]):
@@ -200,14 +209,40 @@ class NeuMF_RecommenderWrapper(BaseRecommender, Incremental_Training_Early_Stopp
 
     RECOMMENDER_NAME = "NeuMF_RecommenderWrapper"
 
-    def __init__(self, URM_train):
+    def __init__(self, URM_train, evaluator_test_all,evaluator_test_M,evaluator_test_F):
         super(NeuMF_RecommenderWrapper, self).__init__(URM_train)
 
+        self.evaluator_all = evaluator_test_all
+        self.evaluator_M = evaluator_test_M
+        self.evaluator_F = evaluator_test_F
         self._train = sps.dok_matrix(self.URM_train)
         self.n_users, self.n_items = self.URM_train.shape
 
         self._item_indices = np.arange(0, self.n_items, dtype=np.int)
         self._user_ones_vector = np.ones_like(self._item_indices)
+
+        self.evaluateOn = False
+
+    def _evaluate_on_test(self, recommender_instance, print_log = True):
+
+        # Evaluate recommender and get results for the first cutoff
+        result_dict_ALL, result_string_ALL = self.evaluator_all.evaluateRecommender(recommender_instance)
+        result_dict_M, result_string_M = self.evaluator_M.evaluateRecommender(recommender_instance)
+        result_dict_F, result_string_F = self.evaluator_F.evaluateRecommender(recommender_instance)
+
+        if print_log:
+            write_on_file("./ResultNeuMF_Tesi/Result.txt","Evaluator All User")
+            write_on_file("./ResultNeuMF_Tesi/Result.txt",result_string_ALL)
+            print("Evaluator All User")
+            print("{} with all_user -results:\n{}\n".format("NeuMF",result_string_ALL))
+            write_on_file("./ResultNeuMF_Tesi/Result.txt", "Evaluator M User")
+            write_on_file("./ResultNeuMF_Tesi/Result.txt", result_string_M)
+            print("Evaluator M User")
+            print("{} with M_user -results:\n{}\n".format("NeuMF", result_string_M))
+            write_on_file("./ResultNeuMF_Tesi/Result.txt", "Evaluator F User")
+            write_on_file("./ResultNeuMF_Tesi/Result.txt", result_string_F)
+            print("Evaluator F User")
+            print("{} with F_user -results:\n{}\n".format("NeuMF", result_string_F))
 
 
     def _compute_item_score(self, user_id_array, items_to_compute=None):
@@ -373,12 +408,17 @@ class NeuMF_RecommenderWrapper(BaseRecommender, Incremental_Training_Early_Stopp
 
         self._best_model = deep_clone_model(self.model)
 
+        self.evaluateOn = True
+
         self._train_with_early_stopping(epochs,
+                                        validation_every_n= 1,
                                         algorithm_name = self.RECOMMENDER_NAME,
                                         **earlystopping_kwargs)
 
 
         self._print("Training complete")
+
+        self.evaluateOn = False
 
         self.model = deep_clone_model(self._best_model)
 
@@ -405,8 +445,13 @@ class NeuMF_RecommenderWrapper(BaseRecommender, Incremental_Training_Early_Stopp
                          np.array(labels).astype(np.int32), # labels
                          batch_size=self.batch_size, epochs=1, verbose=0, shuffle=True)
 
+
         print("NeuMF_RecommenderWrapper: Epoch {}, loss {:.2E}".format(currentEpoch+1, hist.history['loss'][0]))
 
+        if self.evaluateOn:
+            string = "********* " + currentEpoch.__repr__() + " numero epoca corrente *********\n"
+            write_on_file("./ResultNeuMF_Tesi/Result.txt",string)
+            self._evaluate_on_test(self)
 
 
 
