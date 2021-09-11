@@ -451,7 +451,7 @@ class NeuMF_RecommenderWrapper(BaseRecommender, Incremental_Training_Early_Stopp
         print("NeuMF_RecommenderWrapper: Epoch {}, loss {:.2E}".format(currentEpoch+1, hist.history['loss'][0]))
 
         if self.evaluateOn:
-            string = "********* " + currentEpoch.__repr__() + " numero epoca corrente *********\n"
+            string = "********* " + (currentEpoch + 1).__repr__() + " numero epoca corrente *********\n"
             write_on_file(self.path_dir,string)
             self._evaluate_on_test(self)
 
