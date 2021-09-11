@@ -215,6 +215,9 @@ class NeuMF_RecommenderWrapper(BaseRecommender, Incremental_Training_Early_Stopp
         self.evaluator_all = evaluator_test_all
         self.evaluator_M = evaluator_test_M
         self.evaluator_F = evaluator_test_F
+
+        self.path_dir = "./ResultNeuMF_Tesi/Result.txt"
+
         self._train = sps.dok_matrix(self.URM_train)
         self.n_users, self.n_items = self.URM_train.shape
 
@@ -229,18 +232,17 @@ class NeuMF_RecommenderWrapper(BaseRecommender, Incremental_Training_Early_Stopp
         result_dict_ALL, result_string_ALL = self.evaluator_all.evaluateRecommender(recommender_instance)
         result_dict_M, result_string_M = self.evaluator_M.evaluateRecommender(recommender_instance)
         result_dict_F, result_string_F = self.evaluator_F.evaluateRecommender(recommender_instance)
-
         if print_log:
-            write_on_file("./ResultNeuMF_Tesi/Result.txt","Evaluator All User")
-            write_on_file("./ResultNeuMF_Tesi/Result.txt",result_string_ALL)
+            write_on_file(self.path_dir,"Evaluator All User")
+            write_on_file(self.path_dir,result_string_ALL)
             print("Evaluator All User")
             print("{} with all_user -results:\n{}\n".format("NeuMF",result_string_ALL))
-            write_on_file("./ResultNeuMF_Tesi/Result.txt", "Evaluator M User")
-            write_on_file("./ResultNeuMF_Tesi/Result.txt", result_string_M)
+            write_on_file(self.path_dir, "Evaluator M User")
+            write_on_file(self.path_dir, result_string_M)
             print("Evaluator M User")
             print("{} with M_user -results:\n{}\n".format("NeuMF", result_string_M))
-            write_on_file("./ResultNeuMF_Tesi/Result.txt", "Evaluator F User")
-            write_on_file("./ResultNeuMF_Tesi/Result.txt", result_string_F)
+            write_on_file(self.path_dir, "Evaluator F User")
+            write_on_file(self.path_dir, result_string_F)
             print("Evaluator F User")
             print("{} with F_user -results:\n{}\n".format("NeuMF", result_string_F))
 
@@ -450,7 +452,7 @@ class NeuMF_RecommenderWrapper(BaseRecommender, Incremental_Training_Early_Stopp
 
         if self.evaluateOn:
             string = "********* " + currentEpoch.__repr__() + " numero epoca corrente *********\n"
-            write_on_file("./ResultNeuMF_Tesi/Result.txt",string)
+            write_on_file(self.path_dir,string)
             self._evaluate_on_test(self)
 
 

@@ -79,7 +79,7 @@ def trainSlimBpr ():
 
     slimBpr = SLIM_BPR_Cython(URM_train,evaluator_test_all = evaluator_test_ALL, evaluator_test_M = evaluator_test_M, evaluator_test_F = evaluator_test_F)
 
-    slimBpr.fit(epochs=1,#325,
+    slimBpr.fit(epochs=325,
             symmetric = True,
             batch_size = 1000,
             lambda_i = 0.01,
@@ -176,5 +176,14 @@ if __name__ == '__main__':
     ALGORITHM_NAME = "Tesi"
     CONFERENCE_NAME = "2021"
 
+
+    result_path_slim = "./ReusltSlim_Bpr_Tesi/Result.txt"
+    file = open(result_path_slim,"w")
+    file.write("\n")
+
+    result_path_NeuMF = "./ResultNeuMF_Tesi/Result.txt"
+    file = open(result_path_slim, "w")
+    file.write("\n")
+
+    trainSlimBpr()
     trainNeuMF()
-    #trainSlimBpr()

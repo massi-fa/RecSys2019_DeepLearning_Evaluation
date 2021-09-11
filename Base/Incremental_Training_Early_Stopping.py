@@ -89,8 +89,9 @@ class Incremental_Training_Early_Stopping(object):
 
 
     def _train_with_early_stopping(self, epochs_max, epochs_min = 0,
-                                   validation_every_n = None, stop_on_validation = False,
+                                   validation_every_n = 1, stop_on_validation = False,
                                    validation_metric = None, lower_validations_allowed = None, evaluator_object = None,
+                                   evaluator_all = None, evaluator_m = None, evaluator_f =None,
                                    algorithm_name = "Incremental_Training_Early_Stopping"):
         """
 
@@ -230,6 +231,7 @@ class Incremental_Training_Early_Stopping(object):
                         algorithm_name, epochs_current+1, validation_metric, self.epochs_best, self.best_validation_metric, new_time_value, new_time_unit))
 
 
+
             elapsed_time = time.time() - start_time
             new_time_value, new_time_unit = seconds_to_biggest_unit(elapsed_time)
 
@@ -237,6 +239,8 @@ class Incremental_Training_Early_Stopping(object):
                 algorithm_name, epochs_current+1, epochs_max, new_time_value, new_time_unit))
 
             epochs_current += 1
+
+
 
             sys.stdout.flush()
             sys.stderr.flush()

@@ -79,20 +79,20 @@ def read_data_split_and_search(dataset_name,
 
 
     collaborative_algorithm_list = [
-        Random,
-        TopPop,
-        UserKNNCFRecommender,
-        ItemKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
-        PureSVDRecommender,
-        NMFRecommender,
-        IALSRecommender,
-        MatrixFactorization_BPR_Cython,
-        MatrixFactorization_FunkSVD_Cython,
-        EASE_R_Recommender,
+        #Random,
+        #TopPop,
+        #UserKNNCFRecommender,
+        #ItemKNNCFRecommender,
+        #P3alphaRecommender,
+        #RP3betaRecommender,
+        #PureSVDRecommender,
+        #NMFRecommender,
+        #IALSRecommender,
+        #MatrixFactorization_BPR_Cython,
+        #MatrixFactorization_FunkSVD_Cython,
+        #EASE_R_Recommender,
         SLIM_BPR_Cython,
-        SLIMElasticNetRecommender,
+        #SLIMElasticNetRecommender,
         ]
 
     metric_to_optimize = "HIT_RATE"

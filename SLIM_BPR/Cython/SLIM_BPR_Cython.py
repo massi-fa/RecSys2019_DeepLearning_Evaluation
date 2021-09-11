@@ -44,7 +44,15 @@ def get_RAM_status():
     return tot_m, used_m, available_m
 
 
-
+def write_on_file(file_path,string):
+    if os.path.isfile(file_path):
+        file = open(file_path,"a")
+        file.write(string)
+        file.write("\n")
+    else:
+        file = open(file_path, "w")
+        file.write(string)
+        file.write("\n")
 
 
 class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_Early_Stopping):
@@ -52,7 +60,7 @@ class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_
     RECOMMENDER_NAME = "SLIM_BPR_Recommender"
 
 
-    def __init__(self, URM_train,
+    def __init__(self, URM_train, evaluator_test_all, evaluator_test_M, evaluator_test_F,
                  verbose = True,
                  free_mem_threshold = 0.5,
                  recompile_cython = False):
@@ -62,16 +70,20 @@ class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_
 
         assert free_mem_threshold>=0.0 and free_mem_threshold<=1.0, "SLIM_BPR_Recommender: free_mem_threshold must be between 0.0 and 1.0, provided was '{}'".format(free_mem_threshold)
 
+        self.evaluator_all = evaluator_test_all
+        self.evaluator_M = evaluator_test_M
+        self.evaluator_F = evaluator_test_F
+
+        self.path_dir = "./ReusltSlim_Bpr_Tesi/Result.txt"
+
         self.n_users, self.n_items = self.URM_train.shape
 
         self.free_mem_threshold = free_mem_threshold
-
+        print(self)
         if recompile_cython:
             print("Compiling in Cython")
             self.runCompilationScript()
             print("Compilation Complete")
-
-
 
 
 
@@ -161,12 +173,10 @@ class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_
 
         self.S_incremental = self.cythonEpoch.get_S()
         self.S_best = self.S_incremental.copy()
-
+        self.get_S_incremental_and_set_W()
         self._train_with_early_stopping(epochs,
                                         algorithm_name = self.RECOMMENDER_NAME,
                                         **earlystopping_kwargs)
-
-        self.get_S_incremental_and_set_W()
 
         self.cythonEpoch._dealloc()
 
@@ -183,9 +193,32 @@ class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_
         self.S_best = self.S_incremental.copy()
 
     def _run_epoch(self, num_epoch):
-       self.cythonEpoch.epochIteration_Cython()
 
+        self.cythonEpoch.epochIteration_Cython()
+        #self.get_S_incremental_and_set_W()
+        string = "********* " + (num_epoch + 1).__repr__() + " numero epoca corrente *********\n"
+        write_on_file(self.path_dir, string)
+        self._evaluate_on_test(self)
 
+    def _evaluate_on_test(self, recommender_instance, print_log = True):
+
+        # Evaluate recommender and get results for the first cutoff
+        result_dict_ALL, result_string_ALL = self.evaluator_all.evaluateRecommender(recommender_instance)
+        result_dict_M, result_string_M = self.evaluator_M.evaluateRecommender(recommender_instance)
+        result_dict_F, result_string_F = self.evaluator_F.evaluateRecommender(recommender_instance)
+        if print_log:
+            write_on_file(self.path_dir, "Evaluator All User")
+            write_on_file(self.path_dir, result_string_ALL)
+            print("Evaluator All User")
+            print("{} with all_user -results:\n{}\n".format("SlimBpr", result_string_ALL))
+            write_on_file(self.path_dir, "Evaluator M User")
+            write_on_file(self.path_dir, result_string_M)
+            print("Evaluator M User")
+            print("{} with M_user -results:\n{}\n".format("SlimBpr", result_string_M))
+            write_on_file(self.path_dir, "Evaluator F User")
+            write_on_file(self.path_dir, result_string_F)
+            print("Evaluator F User")
+            print("{} with F_user -results:\n{}\n".format("SlimBpr", result_string_F))
     def get_S_incremental_and_set_W(self):
 
         self.S_incremental = self.cythonEpoch.get_S()
