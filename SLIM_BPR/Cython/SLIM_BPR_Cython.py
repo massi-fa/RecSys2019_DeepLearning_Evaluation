@@ -173,11 +173,10 @@ class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_
 
         self.S_incremental = self.cythonEpoch.get_S()
         self.S_best = self.S_incremental.copy()
-        self.get_S_incremental_and_set_W()
         self._train_with_early_stopping(epochs,
                                         algorithm_name = self.RECOMMENDER_NAME,
                                         **earlystopping_kwargs)
-
+        self.get_S_incremental_and_set_W()
         self.cythonEpoch._dealloc()
 
         sys.stdout.flush()
@@ -195,7 +194,7 @@ class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_
     def _run_epoch(self, num_epoch):
 
         self.cythonEpoch.epochIteration_Cython()
-        #self.get_S_incremental_and_set_W()
+        self.get_S_incremental_and_set_W()
         string = "********* " + (num_epoch + 1).__repr__() + " numero epoca corrente *********\n"
         write_on_file(self.path_dir, string)
         self._evaluate_on_test(self)

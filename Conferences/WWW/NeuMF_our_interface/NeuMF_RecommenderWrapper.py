@@ -458,21 +458,6 @@ class NeuMF_RecommenderWrapper(BaseRecommender, Incremental_Training_Early_Stopp
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def save_model(self, folder_path, file_name = None):
 
         if file_name is None:

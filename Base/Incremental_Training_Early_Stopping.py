@@ -91,7 +91,6 @@ class Incremental_Training_Early_Stopping(object):
     def _train_with_early_stopping(self, epochs_max, epochs_min = 0,
                                    validation_every_n = 1, stop_on_validation = False,
                                    validation_metric = None, lower_validations_allowed = None, evaluator_object = None,
-                                   evaluator_all = None, evaluator_m = None, evaluator_f =None,
                                    algorithm_name = "Incremental_Training_Early_Stopping"):
         """
 
