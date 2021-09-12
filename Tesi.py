@@ -425,16 +425,16 @@ if __name__ == '__main__':
     path_slim = "./ReusltSlim_Bpr_Tesi/"
     path_NeuMF = "./ResultNeuMF_Tesi/"
 
-    result_path_slim = path_slim + "Result.txt"
-    file = open(result_path_slim,"w")
-    file.write("\n")
-    result_path_NeuMF = path_slim + "Result.txt"
-    file = open(result_path_slim, "w")
-    file.write("\n")
+    #result_path_slim = path_slim + "Result.txt"
+    #file = open(result_path_slim,"w")
+    #file.write("\n")
+    #result_path_NeuMF = path_slim + "Result.txt"
+    #file = open(result_path_slim, "w")
+    #file.write("\n")
 
 
-    trainSlimBpr()
-    trainNeuMF()
+    #trainSlimBpr()
+    #trainNeuMF()
 
 
     cleanded_path_SlimBpr = path_slim + "Cleaned.txt"
@@ -444,6 +444,7 @@ if __name__ == '__main__':
 
     split_file_cleaned(path_slim)
     split_file_cleaned(path_NeuMF)
+
     """
     metric_to_evaluate = ["COVERAGE_ITEM", "DIVERSITY_MEAN_INTER_LIST", "HIT_RATE", "NDCG", "PRECISION", "RECALL",
                    "SHANNON_ENTROPY"]
